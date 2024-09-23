@@ -1,0 +1,27 @@
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self
+
+  # Instalar Terraform
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: '1.0.x'
+
+  # Inicializar Terraform
+  - script: terraform init
+    displayName: 'Initialize Terraform'
+
+  # Aplicar Terraform para desplegar la infraestructura
+  - script: terraform apply -auto-approve
+    displayName: 'Apply Terraform'
+
+  # Ejecutar Ansible Playbook
+  - task: Ansible@2
+    inputs:
+      playbookPath: 'deploy.yml'
+      inventory: 'inventory.ini'
